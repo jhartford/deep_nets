@@ -2,4 +2,4 @@
 
 The goal of this repository is to present simple implementations of various deep nets. It'll be an ongoing project that starts from MLPs and hopefully gets to recurrent nets, LSTM, etc.
 
-The simple net needs the MNIST dataset which can be downloaded (www.google.com)[here].
+The simple net needs the MNIST dataset which can be downloaded [http://www.iro.umontreal.ca/~lisa/deep/data/mnist/mnist.pkl.gz](here).

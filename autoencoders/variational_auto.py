@@ -16,7 +16,7 @@ def relu(x):
 def train_model(data, train_fn):
     train, valid, test = data
     print "Epoch\tLoss"
-    for i in range(350):
+    for i in range(50):
         print "%s\t%s" % (i, train_fn(train[0]))
 
 

@@ -63,7 +63,7 @@ def main():
     eval_accuracy = theano.function([X, y], accuracy,
                                     allow_input_downcast=True)
 
-    print "Epoch\tLoss\tTest accuracy"
+    print "Epoch\tLoss\t\tTest accuracy"
     for i in range(500):
         print "%s\t%s\t%s" % (i,
                               train_fn(train[0], train[1]),

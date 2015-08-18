@@ -5,6 +5,35 @@ import scipy
 import cPickle as pickle
 
 
+def floatX(x):
+    return np.asarray(x, dtype=theano.config.floatX)
+
+
+def theano_shared(value, **kwargs):
+    var = theano.shared(floatX(value), **kwargs)
+    return var
+
+
+def adadelta(params, gradients, rho=0.95, eps=1e-6, offset_lr=1.0):
+    #  Theano variables for storing intermediate values
+    grad_2 = [theano_shared(np.zeros(p.get_value().shape)) for p in params]
+    delta_2 = [theano_shared(np.zeros(p.get_value().shape)) for p in params]
+    #  del_x = [theano_shared(np.zeros(p.get_value().shape)) for p in params]
+
+    accumulate_grad = [(g2, rho * g2 + (1-rho) * (g)**2) for
+                       g2, g in zip(grad_2, gradients)]
+
+    deltas = [-(T.sqrt(d2 + eps)) / (T.sqrt(g2 + eps)) * (g)
+              for g2, d2, g in zip(grad_2, delta_2, gradients)]
+
+    accumulate_update = [(dx, rho * dx + (1-rho) * x**2) for
+                         dx, x in zip(delta_2, deltas)]
+    apply_update = [(p, p + offset_lr * x) for p, x in zip(params, deltas)]
+    updates = accumulate_grad + accumulate_update + apply_update
+    adaptive_lr = False
+    return updates
+
+
 def load_data(file):
     return pickle.load(open(file))
 
@@ -16,7 +45,7 @@ def relu(x):
 def train_model(data, train_fn):
     train, valid, test = data
     print "Epoch\tLoss"
-    for i in range(350):
+    for i in range(50):
         print "%s\t%s" % (i, train_fn(train[0]))
 
 
@@ -65,7 +94,8 @@ def build_model():
         print str(p), p.get_value().shape
     grad = [T.grad(loss, i) for i in par]
     # Collect all parameters
-    updates = [(p, p - learn_rate * g) for p, g in zip(par, grad)]
+    # updates = [(p, p - learn_rate * g) for p, g in zip(par, grad)]
+    updates = adadelta(par, grad)
     print "building function..."
     train_fn = theano.function([X], loss, updates=updates,
                                allow_input_downcast=True)

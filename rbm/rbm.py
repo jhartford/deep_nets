@@ -67,7 +67,14 @@ class RBM(object):
             theano_rng = RandomStreams(numpy_rng.randint(2 ** 30))
 
         if W is None:
-            initial_W = xavier_weight(n_hidden, n_visible, numpy_rng)
+            initial_W = numpy.asarray(
+                numpy_rng.uniform(
+                    low=-4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    high=4 * numpy.sqrt(6. / (n_hidden + n_visible)),
+                    size=(n_visible, n_hidden)
+                ),
+                dtype=theano.config.floatX
+            )
             # theano shared variables for weights and biases
             W = theano.shared(value=initial_W, name='W', borrow=True)
 

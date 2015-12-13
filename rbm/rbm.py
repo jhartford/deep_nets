@@ -20,7 +20,7 @@ import theano.tensor as T
 import os
 import gzip
 import cPickle
-# import utils import floatX
+from utils import xavier_weight
 
 from theano.tensor.shared_randomstreams import RandomStreams
 
